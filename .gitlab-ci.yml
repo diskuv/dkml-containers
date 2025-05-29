@@ -1,0 +1,26 @@
+stages:
+  - build
+  - test
+
+variables:
+  # Far safer and reproducible but slower to use a clean directory rather than re-use a source directory (and then have GitLab do a `git clean``)
+  # Confer: https://docs.gitlab.com/ee/ci/pipelines/settings.html#choose-the-default-git-strategy
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 1
+
+docker-build:
+  image: docker:28
+  services:
+    - docker:28-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_DRIVER: overlay2
+  parallel:
+    matrix:
+      - SUBPROJECT:
+        - avalonia-base
+  before_script:
+    - docker info
+  script:
+    - echo "$CI_JOB_TOKEN" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - sh ${CI_PROJECT_DIR}/src/build-linux.sh
