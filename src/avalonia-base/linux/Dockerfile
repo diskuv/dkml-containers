@@ -3,8 +3,17 @@
 # ===================
 #
 # Increment the Serial number in VERSION=Major.Minor.Patch.Serial.
+#
+#   The version number should be the Avalonia Major.Minor.Patch version, followed by a .Serial number
+#   which is the sequence number of changes to this Dockerfile. Always increment the .Serial number when
+#   changing the Dockerfile!
+#
 # Examples:
 #   1.0.0.1 -> 1.0.0.2 -> 1.1.0.3 -> 1.2.0.4
+#
+#   format: Do not change format! Must be `#:: VERSION=<version>` since part of `grep -E` in ci/gitlab/util-*.yml
+#:: VERSION=11.3.0.2
+
 
 # Container: Debian Bookworm (12) for semantic versions `dotnet.1.x.x`
 # Why?
@@ -31,7 +40,7 @@ RUN sudo dotnet workload install wasm-tools-net8 android
 
 #   https://github.com/dotnet/emsdk used by wasm-tools has an
 #   implicit system dependency on Python
-RUN sudo apt-get update && sudo apt-get install -y python3
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends python3
 
 #   Install dotnet 8 since Avalonia Preview needs 8 (likely because
 #   the csproj is 8). Both dotnet 8 and 9 can co-exist.
@@ -39,7 +48,7 @@ RUN sudo apt-get update && sudo apt-get install -y python3
 RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     sudo dpkg -i packages-microsoft-prod.deb && \
     rm packages-microsoft-prod.deb
-RUN sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends dotnet-sdk-8.0
 
 #   The Avalonia Preview binds to localhost and can't be done correctly in a remote PC like GitHub Codespaces.
 #   But if running the devcontainer locally, we'd first encounter the following ... which we need to avoid:
@@ -47,7 +56,7 @@ RUN sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
 #     ---> System.DllNotFoundException: Unable to load shared library 'libSkiaSharp' or one of its dependencies. In order to help diagnose loading problems, consider using a tool like strace. If you're using glibc, consider setting the LD_DEBUG environment variable: 
 #     libfontconfig.so.1: cannot open shared object file: No such file or directory
 #     /usr/share/dotnet/shared/Microsoft.NETCore.App/8.0.16/libSkiaSharp.so: cannot open shared object file: No such file or directory
-RUN sudo apt-get install -y libfontconfig1
+RUN sudo apt-get install -y --no-install-recommends libfontconfig1
 
 #   Useful tools ...
 
@@ -64,7 +73,7 @@ RUN sudo wget -O /usr/local/bin/dk https://diskuv.com/a/dk-distribution/2.3.2025
 #   xpra: https://github.com/Xpra-org/xpra/wiki/Download#-for-debian-based-distributions
 # RUN sudo wget -O "/usr/share/keyrings/xpra.asc" https://xpra.org/xpra.asc
 # RUN sudo sh -c 'cd /etc/apt/sources.list.d && wget https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/bookworm/xpra-lts.sources'
-# RUN sudo apt update && sudo apt install -y xpra
+# RUN sudo apt update && sudo apt install -y --no-install-recommends xpra
 
 #   caddy
 # RUN sudo wget -O caddy.tar.gz https://github.com/caddyserver/caddy/releases/download/v2.10.0/caddy_2.10.0_linux_amd64.tar.gz && \
@@ -75,13 +84,6 @@ RUN sudo wget -O /usr/local/bin/dk https://diskuv.com/a/dk-distribution/2.3.2025
 #   --------------
 #   BUILD AVALONIA
 #   --------------
-
-#   The version number should be the Avalonia Major.Minor.Patch version, followed by a .Serial number
-#   which is the sequence number of changes to this Dockerfile. Always increment the .Serial number when
-#   changing the Dockerfile!
-#
-#   format: Do not change format! Must be `#:: VERSION=<version>` since part of `grep -E` in ci/gitlab/util-*.yml
-#:: VERSION=11.3.0.1
 
 #   Prerequisites for building Avalonia ...
 #
@@ -96,6 +98,18 @@ RUN git clone https://github.com/jonahbeckford/Avalonia.git /usr/src/Avalonia &&
     git -C /usr/src/Avalonia reset --hard 71618b9150bf582fd98975d39f6125c3d5417f45 && \
     OLDPWD=$(pwd) && cd /usr/src/Avalonia && \
     git submodule update --init --recursive && \
-    sudo apt-get install -y npm && \
+    sudo apt-get install -y --no-install-recommends npm && \
     nuke --target BuildToNuGetCache --configuration Debug && \
     cd $OLDPWD
+
+# Clear apt cache
+#   Confer: https://github.com/debuerreotype/debuerreotype/blob/c9542ab785e72696eb2908a6dbc9220abbabef39/scripts/debuerreotype-minimizing-config#L87-L109
+#   and https://docs.docker.com/build/building/best-practices/#apt-get
+RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+
+# ----------------------------------------------
+
+FROM scratch
+COPY --from=0 / /
+CMD ["/usr/bin/bash"]
+USER 1000
