@@ -22,6 +22,8 @@
 #      Confer: https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_creating-a-nonroot-user
 FROM mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm
 
+LABEL org.opencontainers.image.description="Avalonia UI (https://avaloniaui.net/) with Android and WASM workloads, and [nuke], [jj] and [dk] tools."
+
 #   wasm-tools-net8: ScoutTrainingApp.Browser (aka.
 #       'wasm-tool' if we had dotnet version 8.0 as the dotnet executable)
 #   android: ScoutTrainingApp.Android
