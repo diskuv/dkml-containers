@@ -32,7 +32,7 @@ cd "src/$IMAGE_NAME/linux"
 # Add labels to Dockerfile
 cat Dockerfile
 echo "LABEL org.opencontainers.image.source=$CI_PROJECT_URL" | tee -a Dockerfile
-echo "LABEL commit=$CI_COMMIT_SHA" | tee -a Dockerfile
+echo "LABEL org.opencontainers.image.revision=$CI_COMMIT_SHA" | tee -a Dockerfile
 export IMAGE_NAME="$CI_REGISTRY_IMAGE/$IMAGE_NAME"
 export IMAGE_URI="$IMAGE_NAME:$IMAGE_TAG"
 export IMAGE_EDGE="$IMAGE_NAME:edge"
