@@ -100,7 +100,8 @@ RUN git clone https://github.com/jonahbeckford/Avalonia.git /usr/src/Avalonia &&
     git submodule update --init --recursive && \
     sudo apt-get install -y --no-install-recommends npm && \
     nuke --target BuildToNuGetCache --configuration Debug && \
-    cd $OLDPWD
+    cd $OLDPWD && \
+    git -C /usr/src/Avalonia clean -d -x -f
 
 # Clear apt cache
 #   Confer: https://github.com/debuerreotype/debuerreotype/blob/c9542ab785e72696eb2908a6dbc9220abbabef39/scripts/debuerreotype-minimizing-config#L87-L109
