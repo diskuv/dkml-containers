@@ -108,8 +108,9 @@ RUN git clone https://github.com/jonahbeckford/Avalonia.git /usr/src/Avalonia &&
 RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
 # ----------------------------------------------
+# GitHub and GitLab standard runners will run out of space creating this single layer!
 
-FROM scratch
-COPY --from=0 / /
-CMD ["/usr/bin/bash"]
-USER 1000
+# FROM scratch
+# COPY --from=0 / /
+# CMD ["/usr/bin/bash"]
+# USER 1000
