@@ -33,6 +33,7 @@ cat Dockerfile
 echo "LABEL commit=$CI_COMMIT_SHA" | tee -a Dockerfile
 export IMAGE_NAME="$CI_REGISTRY_IMAGE/$IMAGE_NAME"
 export IMAGE_URI="$IMAGE_NAME:$IMAGE_TAG"
+export IMAGE_EDGE="$IMAGE_NAME:edge"
 
 # Create and push container
 echo "__ pushing container __"
@@ -45,5 +46,5 @@ time docker buildx build \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     "--cache-from=type=registry,ref=$IMAGE_NAME:buildcache" \
     "--cache-to=type=registry,ref=$IMAGE_NAME:buildcache,mode=max,image-manifest=true,oci-mediatypes=true" \
-    -t "$IMAGE_URI" \
+    -t "$IMAGE_URI" -t "$IMAGE_EDGE" \
     --push .
