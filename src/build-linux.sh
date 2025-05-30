@@ -16,24 +16,30 @@ CI_COMMIT_SHA=$CI_COMMIT_SHA
 ------
 Matrix
 ------
-SUBPROJECT=$SUBPROJECT
+IMAGE_NAME=$IMAGE_NAME
 .
 "
 
-cd "src/$SUBPROJECT/linux"
-cat Dockerfile
-
 # Inspect Dockerfile
-IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' Dockerfile | awk 'BEGIN{FS="="} { print $2 }')
-if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from Dockerfile"; exit 1; fi
+#   SYNC: src/build-linux.sh, .github/workflows/deploy-image.yml:jobs/build-and-push-image/steps[id=version]
+IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' "src/$IMAGE_NAME/linux/Dockerfile" | awk 'BEGIN{FS="="} { print $2 }')
+if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from src/$IMAGE_NAME/linux/Dockerfile"; exit 1; fi
+
+# Change to the Docker context directory. Makes docker commands simple
+cd "src/$IMAGE_NAME/linux"
+
+# Add labels to Dockerfile
+cat Dockerfile
 echo "LABEL commit=$CI_COMMIT_SHA" | tee -a Dockerfile
-export IMAGE_NAME="$CI_REGISTRY_IMAGE/$SUBPROJECT"
+export IMAGE_NAME="$CI_REGISTRY_IMAGE/$IMAGE_NAME"
 export IMAGE_URI="$IMAGE_NAME:$IMAGE_TAG"
 
 # Create and push container
+echo "__ pushing container __"
 echo "image uri: $IMAGE_URI"
 docker context create builder
 docker buildx create builder --use
+#   SYNC: src/build-linux.sh, .github/workflows/deploy-image.yml:jobs/build-and-push-image/steps[id=push]
 time docker buildx build \
     --platform linux/amd64 \
     --build-arg BUILDKIT_INLINE_CACHE=1 \

@@ -16,8 +16,9 @@ docker-build:
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_DRIVER: overlay2
   parallel:
+    # SYNC: .github/workflows/deploy-image.yml:jobs/build-and-push-image/strategy, .gitlab-ci.yml/docker-build/parallel/matrix
     matrix:
-      - SUBPROJECT:
+      - IMAGE_NAME:
         - avalonia-base
   before_script:
     - docker info
