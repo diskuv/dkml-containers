@@ -20,15 +20,21 @@ Matrix
 ------
 IMAGE_NAME=$IMAGE_NAME
 .
+-------
+Derived
+-------
+DOCKER_CONTEXT_NAME=$DOCKER_CONTEXT_NAME
+DOTNET_WORKLOADS=$DOTNET_WORKLOADS
+.
 "
 
 # Inspect Dockerfile
 #   SYNC: src/build-linux.sh, .github/workflows/deploy-image.yml:jobs/build-and-push-image/steps[id=version]
-IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' "src/$IMAGE_NAME/linux/Dockerfile" | awk 'BEGIN{FS="="} { print $2 }')
-if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from src/$IMAGE_NAME/linux/Dockerfile"; exit 1; fi
+IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' "src/$DOCKER_CONTEXT_NAME/linux/Dockerfile" | awk 'BEGIN{FS="="} { print $2 }')
+if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from src/$DOCKER_CONTEXT_NAME/linux/Dockerfile"; exit 1; fi
 
 # Change to the Docker context directory. Makes docker commands simple
-cd "src/$IMAGE_NAME/linux"
+cd "src/$DOCKER_CONTEXT_NAME/linux"
 
 # Add labels to Dockerfile
 cat Dockerfile
@@ -49,6 +55,7 @@ docker buildx create builder --use
 time docker buildx build \
     --platform linux/amd64 \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
+    --build-arg "DOTNET_WORKLOADS=$DOTNET_WORKLOADS" \
     "--cache-from=type=registry,ref=$IMAGE_NAME:buildcache" \
     "--cache-to=type=registry,ref=$IMAGE_NAME:buildcache,mode=max,image-manifest=true,oci-mediatypes=true" \
     -t "$IMAGE_URI" -t "$IMAGE_EDGE" \

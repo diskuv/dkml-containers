@@ -130,13 +130,15 @@ RUN wget -O /usr/local/bin/dk https://diskuv.com/a/dk-distribution/2.3.202505280
 #   wasm-tools-net8: ScoutTrainingApp.Browser (aka.
 #       'wasm-tool' if we had dotnet version 8.0 as the dotnet executable)
 #   android: ScoutTrainingApp.Android
-RUN dotnet workload install wasm-tools-net8 android
+ARG DOTNET_WORKLOADS
+RUN dotnet workload install ${DOTNET_WORKLOADS}
 
 # --------------------------- STAGE: SINGLE LAYER FINAL IMAGE ---------------------------
+# NOTE: Not enough space for GitHub and GitLab standard machines to do the copy.
 
-FROM scratch
-COPY --from=core / /
-CMD ["/usr/bin/bash"]
-USER 1000
+# FROM scratch
+# COPY --from=core / /
+# CMD ["/usr/bin/bash"]
+# USER 1000
 
 LABEL org.opencontainers.image.description="Avalonia UI (https://avaloniaui.net/) with Android and WASM workloads, and [nuke], [jj] and [dk] tools."

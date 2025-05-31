@@ -27,7 +27,8 @@ jobs:
       matrix:
         # SYNC: .github/workflows/deploy-image.yml:jobs/build-and-push-image/strategy, .gitlab-ci.yml/docker-build/parallel/matrix
         IMAGE_NAME:
-          - avalonia-base
+          - avalonia-browser-base
+          - avalonia-android-base
 
     steps:
       - name: Checkout repository
@@ -41,14 +42,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # This step creates the build context based on the image name
+      - name: Derive build context
+        id: build-context
+        env:
+          IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
+        run: |
+          . src/image-to-buildcontext.sh
+          echo "DOCKER_CONTEXT_NAME=$DOCKER_CONTEXT_NAME" | tee -a "$GITHUB_OUTPUT"
+          echo "DOTNET_WORKLOADS=$DOTNET_WORKLOADS" | tee -a "$GITHUB_OUTPUT"
+
       # This step looks inside the Dockerfile for the VERSION which becomes the primary tag
       - name: Extract primary tag (VERSION) from Dockerfile
         id: primary-tag
         env:
-          IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
+          DOCKER_CONTEXT_NAME: ${{ steps.build-context.outputs.DOCKER_CONTEXT_NAME }}
         run: |
-          IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' "src/$IMAGE_NAME/linux/Dockerfile" | awk 'BEGIN{FS="="} { print $2 }')
-          if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from src/$IMAGE_NAME/linux/Dockerfile"; exit 1; fi
+          IMAGE_TAG=$(grep -E '^#:: VERSION=.*$' "src/$DOCKER_CONTEXT_NAME/linux/Dockerfile" | awk 'BEGIN{FS="="} { print $2 }')
+          if [ -z "$IMAGE_TAG" ]; then echo "'#:: VERSION=<version>' missing from src/$DOCKER_CONTEXT_NAME/linux/Dockerfile"; exit 1; fi
           echo "tag=$IMAGE_TAG" | tee -a "$GITHUB_OUTPUT"
       
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
@@ -78,7 +89,7 @@ jobs:
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: src/${{ matrix.IMAGE_NAME }}/linux
+          context: src/${{ steps.build-context.outputs.DOCKER_CONTEXT_NAME }}/linux
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -88,6 +99,7 @@ jobs:
           #     Confer: https://docs.docker.com/build/ci/github-actions/cache/
           build-args: |
             BUILDKIT_INLINE_CACHE=1
+            DOTNET_WORKLOADS=${{ steps.build-context.outputs.DOTNET_WORKLOADS }}
           cache-from: |
             type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ matrix.IMAGE_NAME }}:buildcache
           cache-to: |

@@ -1,0 +1,79 @@
+# Recommendation: Place this file in source control.
+#
+#    Copyright 2021 Diskuv, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+# Last Updated: 2024-05-09
+
+# Set the default behavior, in case people don't have core.autocrlf set.
+# This is critical for Windows and UNIX interoperability.
+* text=auto
+
+# Jujutsu requires LF endings for all text files
+# https://jj-vcs.github.io/jj/latest/windows/#line-endings-are-not-converted
+
+*.c text eol=lf
+*.c++ text eol=lf
+*.cs text eol=lf
+*.csproj text eol=lf
+*.h text eol=lf
+*.java text eol=lf
+*.md text eol=lf
+*.exe.manifest text eol=lf
+
+*.capnp text eol=lf
+configure text eol=lf
+*.css text eol=lf
+dk text eol=lf
+dune text eol=lf
+dune-project text eol=lf
+*.dune text eol=lf
+gradlew text eol=lf
+header-*.txt text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.patch text eol=lf
+*.plist text eol=lf
+*.props text eol=lf
+*.sexp text eol=lf
+*.sh text eol=lf
+Makefile text eol=lf
+*.manifest text eol=lf
+*.mli text eol=lf
+*.ml text eol=lf
+opam text eol=lf
+*.opam text eol=lf
+*.opam.template text eol=lf
+*.out text eol=lf
+*.pub text eol=lf
+*.sec text eol=lf
+*.sig text eol=lf
+*.sln text eol=lf
+*.t text eol=lf
+*.txt text eol=lf
+*.xib text eol=lf
+*.xml text eol=lf
+
+*.bat text eol=lf
+*.cmd text eol=lf
+*.sln text eol=lf
+
+*.ps1 text eol=lf
+*.psm1 text eol=lf
+
+COPYRIGHT text eol=lf
+LICENSE text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.ocamlformat text eol=lf

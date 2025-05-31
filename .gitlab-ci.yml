@@ -19,9 +19,11 @@ docker-build:
     # SYNC: .github/workflows/deploy-image.yml:jobs/build-and-push-image/strategy, .gitlab-ci.yml/docker-build/parallel/matrix
     matrix:
       - IMAGE_NAME:
-        - avalonia-base
+        - avalonia-browser-base
+        - avalonia-android-base
   before_script:
     - docker info
   script:
     - echo "$CI_JOB_TOKEN" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - . ${CI_PROJECT_DIR}/src/image-to-buildcontext.sh
     - sh ${CI_PROJECT_DIR}/src/build-linux.sh
