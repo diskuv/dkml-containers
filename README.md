@@ -2,8 +2,8 @@
 
 DkML Docker Containers are a set of open-source containers available from:
 
-- The GitHub Package Registry. For example, `docker pull ghcr.io/diskuv/avalonia-base:edge`
-- The GitLab Container Registry. It requires authentication. For example, `docker login -u ... -p ...` and `docker pull registry.gitlab.com/dkml/base/containers/avalonia-base:edge`
+- The GitHub Package Registry. For example, `docker pull ghcr.io/diskuv/avalonia-browser-base:edge`
+- The GitLab Container Registry. It requires authentication. For example, `docker login -u ... -p ...` and `docker pull registry.gitlab.com/dkml/base/containers/avalonia-browser-base:edge`
 
 ## image: avalonia-browser-base
 

@@ -71,7 +71,9 @@ RUN git clone https://github.com/jonahbeckford/Avalonia.git Avalonia && \
 # --------------------------- STAGE: MULTILAYERED FINAL IMAGE ---------------------------
 
 FROM mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm AS core
-COPY --from=avalonia-build /home/vscode/.nuget/packages/ /home/vscode/.nuget/packages/
+
+#   vscode:vscode
+COPY --chown=1000:1000 --from=avalonia-build /home/vscode/.nuget/packages/ /home/vscode/.nuget/packages/
 
 # ------------
 # apt packages
