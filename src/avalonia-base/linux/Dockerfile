@@ -3,7 +3,7 @@
 # ===================
 #
 #   format: Do not change format! Must be `#:: VERSION=<version>` since part of `grep -E` in ci/gitlab/util-*.yml
-#:: VERSION=11.3.0.4
+#:: VERSION=11.3.0.5
 #
 # Increment the Serial number in VERSION=Major.Minor.Patch.Serial.
 #
