@@ -111,7 +111,7 @@ RUN wget -O jj.tar.gz https://github.com/jj-vcs/jj/releases/download/v0.29.0/jj-
     command -v jj
 
 #   dk: https://github.com/diskuv/dkcoder
-RUN wget -O /usr/local/bin/dk https://diskuv.com/a/dk-distribution/2.3.202505280211/dist/dk-linux_x86_64 && \
+RUN wget -O /usr/local/bin/dk https://diskuv.com/a/dk-exe/2.4.202506160116-signed/dk-linux_x86_64 && \
     chmod +x /usr/local/bin/dk
 
 #   xpra: https://github.com/Xpra-org/xpra/wiki/Download#-for-debian-based-distributions
